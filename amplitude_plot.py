@@ -1,454 +1,502 @@
+
 import importlib
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from metrics import get_phase_markers, compute_baseline_marker, reentrainment_hours, amp_series, hours_to_90pct, circular_mean_hours, circular_distance 
+from protocols import allnighter_protocol, branch_ld_after, branch_dark_after
+from models import Jewett99, Forger99, Hannay19, Hannay19TP
 
-# --- Simulation & Experiment Constants ---
-MODEL_NAMES = [
-    'Jewett99', 'Forger99', 'Hannay19', 'Hannay19TP', 'Hilaire07', 'Breslow13',
-    'Skeldon23'
-]
+# Which phase marker to use for the analysis ("cbt" or "dlmo")
+PHASE_MARKER = "cbt" #"cbt"    "dlmo"
+MODEL_CLASSES = [
+    ("Jewett99",   Jewett99),
+    ("Forger99",   Forger99),
+    ("Hannay19",   Hannay19),
+    ("Hannay19TP", Hannay19TP),]
 
-HOURS = 24.0 * (30 + 1 + 14)  # 30 baseline days + 1 disruption night + 14 recovery
-DT = 0.1                      # hour step; smaller = more accurate, slower
-TOL_MIN = 15                  # tolerance in minutes for re-entrainment
-STREAK = 3                    # consecutive days within tolerance
-
+# ==== protocol and light schedule ====
+HOURS = 24.00* (30 + 1 + 14)           # 30 baseline days + 1 disruption night + 14 recovery
+DT = 0.10
+BASELINE_DAYS = 30
+RECOVERY_DAYS = 14
+# Re-entrainment definition
+TOL_MIN = 15     # phase tolerance in minutes
+STREAK = 3       # consecutive days within tolerance
+DAY_START = 7.0
+DAY_END = 23.0
 # Baseline light levels (lux)
-DAY_LUX = 250.0
+DAY_LUX = 1000.0
 NIGHT_LUX = 1.0
-
-# All-nighter light level & timing (local clock hours)
-ALL_NIGHTER_LUX = 1000.0
+DARK_LUX = 100.0
+# All-nighter 
+ALLNIGHTER_LUX = 1000.0
 ALL_NIGHTER_START = 22.0
-ALL_NIGHTER_END = 6.0         # next morning
+ALL_NIGHTER_END = 6.0   # next morning
 
-# Low-lux sanity pulse (optional, but defined in original)
-LOW_LUX = 75.0
-LOW_PULSE_START = 21.0
-LOW_PULSE_END = 24.0
+t, lux_all, baseline_days, recovery_start_day = allnighter_protocol(
+    baseline_days=BASELINE_DAYS,
+    recovery_days=RECOVERY_DAYS,
+    dt=DT,
+    day_start=7.0,
+    day_end=23.0,
+    day_lux=DAY_LUX,
+    night_lux=NIGHT_LUX,
+    allnighter_lux=ALLNIGHTER_LUX,
+)
+'''
 
-# --- Light Schedule Functions ---
+lux_ld   = branch_ld_after(t, lux_all, recovery_start_day)
+lux_dark = branch_dark_after(t, lux_all, recovery_start_day, dark_lux=NIGHT_LUX)
+
+
 
 def make_ld_schedule(total_hours, day_lux, night_lux, day_start=7.0, day_end=23.0):
-    """Generates a standard light-dark (LD) schedule."""
     t = np.arange(0, total_hours, DT)
     lux = np.zeros_like(t)
-
     # daily pattern repeating:
     for i, ti in enumerate(t):
-        h = ti % 24.0
+        h = ti % 24.00
         in_day = (day_start <= h < day_end)
         lux[i] = day_lux if in_day else night_lux
     return t, lux
 
 def insert_all_nighter(lux, t, start_hr=22.0, end_hr=6.0, lux_level=1000.0, day_index=30):
-    """Replace night of baseline day_index with bright light (the all-nighter)."""
+    """Replace night of baseline day_index with bright light 22:00–06:00."""
     # map day_index's clock interval
     for i, ti in enumerate(t):
-        day = int(ti // 24.0)
+        day = int(ti // 24.00)
         if day == day_index:
-            h = ti % 24.0
-            # Check for night hours, handling the wrap-around (22:00 to 24:00 and 0:00 to 6:00)
+            h = ti % 24.00
             if (h >= start_hr) or (h < end_hr):
                 lux[i] = lux_level
     return lux
 
 def branch_darkness_after(t, lux, start_day=31, night_lux=1.0):
-    """Enforce constant dark nights during recovery phase (starting at start_day)."""
     out = lux.copy()
     for i, ti in enumerate(t):
-        day = int(ti // 24.0)
-        if day >= start_day:
-            h = ti % 24.0
-            # keep days same; enforce dark nights
-            if not (7.0 <= h < 23.0):
-                out[i] = night_lux
+        day = int(ti // 24.00)
+        if day >= start_day: 
+            out[i] = night_lux
     return out
 
-# --- Metric Functions ---
-
 def daily_marker_times(model, traj):
+    """Return times (in hours) for daily phase marker.
+       For Forger-like models we’ll use CBTmin via model.cbt(); for Hannay-like via model.cbt()."""
+    # Both variants in your models.py expose CBT minima finders. We’ll try model.cbt()
+    cbt_times = model.cbt(traj)  # expected in hours timeline
+    return np.array(cbt_times)
+  '''
+def daily_mean_marker(marker_times):
     """
-    Return times (in hours) for daily phase marker.
-    Assumes models.py exposes a 'cbt(trajectory)' method to find markers.
+    Given absolute marker times (hours), return (days, daily_mean_clock_hour).
+    Uses circular mean within each day.
     """
-    try:
-        # Both variants in your models.py expose CBT minima finders.
-        cbt_times = model.cbt(traj)  # expected in hours timeline
-        return np.array(cbt_times) if cbt_times else np.array([])
-    except Exception as e:
-        print(f"[WARNING] Error extracting CBT markers: {e}")
-        return np.array([])
+    marker_times = np.asarray(marker_times)
+    if marker_times.size == 0:
+        return np.array([]), np.array([])
 
-def circular_mean_hours(hours):
-    """
-    Compute circular mean of hours (0-24 scale).
-    Returns mean hour in [0, 24).
-    """
-    if len(hours) == 0:
-        return None
-    
-    # Convert hours to radians
-    ang = np.array(hours) * (2 * np.pi / 24.0)
-    
-    # Compute mean angle
-    mean_sin = np.mean(np.sin(ang))
-    mean_cos = np.mean(np.cos(ang))
-    mean_ang = math.atan2(mean_sin, mean_cos)
-    
-    # Convert back to hours [0, 24)
-    if mean_ang < 0:
-        mean_ang += 2 * np.pi
-    
-    return (mean_ang * 24.0) / (2 * np.pi)
+    day_dict = {}
+    for t in marker_times:
+        d = int(t // 24.0)
+        day_dict.setdefault(d, []).append(t)
 
-def compute_baseline_marker(cbt_times, baseline_days=25):
-    """
-    Compute the target baseline phase marker (CBTmin) by averaging the
-    last few baseline days (up to baseline_days).
-    Returns mean clock hour (0-24).
-    """
-    if len(cbt_times) == 0:
-        return None
-    
-    # Filter to baseline period
-    base = [t for t in cbt_times if t < baseline_days * 24.0]
-    if len(base) < 3:
-        print(f"[WARNING] Only {len(base)} baseline markers found, need at least 3")
-        return None
+    days = sorted(day_dict.keys())
+    means = []
+    for d in days:
+        hs = [ti % 24.0 for ti in day_dict[d]]
+        means.append(circular_mean_hours(hs))
 
-    # Get clock hours
-    hours = np.array(base) % 24.0
-    
-    # Use circular mean
-    return circular_mean_hours(hours)
+    return np.array(days), np.array(means)
 
-def circular_distance(h1, h2):
-    """
-    Compute the shortest angular distance between two clock hours.
-    Returns value in [-12, 12].
-    """
-    diff = h1 - h2
-    # Wrap to [-12, 12]
-    while diff > 12:
-        diff -= 24
-    while diff < -12:
-        diff += 24
-    return diff
 
 def reentrainment_hours(cbt_times, baseline_marker_h, start_day=31, tol_min=15, streak=3):
     """
     Return the time to re-entrainment in HOURS (float), measured from
-    the start of the recovery phase (start_day * 24 h).
-    Requires streak consecutive DAYS within the tolerance.
-    """
-    if len(cbt_times) == 0 or baseline_marker_h is None:
-        return None
-    
-    tol_h = tol_min / 60.0
-    start_recovery_time = start_day * 24.0
+    the start of the recovery phase (start_day*24 h).
 
-    # Get all days that have markers after recovery started
-    recovery_markers = [t for t in cbt_times if t >= start_recovery_time]
-    if len(recovery_markers) == 0:
-        return None
-    
-    # Group markers by day
-    day_markers = {}
-    for t in recovery_markers:
-        day = int(t // 24)
-        if day not in day_markers:
-            day_markers[day] = []
-        day_markers[day].append(t)
-    
-    # Sort days
-    sorted_days = sorted(day_markers.keys())
-    
-    # Check each day for the start of a streak
-    for i, d in enumerate(sorted_days):
-        # Get mean clock hour for this day
-        todays = day_markers[d]
-        h = circular_mean_hours([ti % 24.0 for ti in todays])
-        if h is None:
+    We still require `streak` consecutive DAYS within the tolerance,
+    but we place the re-entrainment time at the *mean marker time*
+    on the first good day.
+    """
+    tol_h = tol_min / 60.0
+    # consider only markers during the recovery phase
+    days = sorted(set(int(t // 24) for t in cbt_times if t >= start_day * 24))
+
+    for d in days:
+        # markers on this day
+        todays = [t for t in cbt_times if d * 24 <= t < (d + 1) * 24]
+        if not todays:
             continue
-        
-        # Check if within tolerance
-        err = circular_distance(h, baseline_marker_h)
-        
+
+        # mean clock hour for that day
+        h = np.mean([ti % 24.0 for ti in todays])
+        err = (((h - baseline_marker_h + 12) % 24) - 12)   # wrapped error in hours
         if abs(err) <= tol_h:
-            # Check if we have enough consecutive days for the streak
-            if i + streak > len(sorted_days):
-                # Not enough days left to complete streak
-                continue
-            
-            # Verify the streak
+            # check streak on following days
             good = True
             for k in range(1, streak):
-                next_day_idx = i + k
-                if next_day_idx >= len(sorted_days):
+                d2 = d + k
+                toms = [t for t in cbt_times if d2 * 24 <= t < (d2 + 1) * 24]
+                if not toms:
                     good = False
                     break
-                
-                d2 = sorted_days[next_day_idx]
-                
-                # Check if days are actually consecutive
-                if d2 != d + k:
-                    good = False
-                    break
-                
-                # Check if markers are within tolerance
-                h2 = circular_mean_hours([ti % 24.0 for ti in day_markers[d2]])
-                if h2 is None:
-                    good = False
-                    break
-                
-                err2 = circular_distance(h2, baseline_marker_h)
+                h2 = np.mean([ti % 24.0 for ti in toms])
+                err2 = (((h2 - baseline_marker_h + 12) % 24) - 12)
                 if abs(err2) > tol_h:
                     good = False
                     break
-            
+
             if good:
-                # Re-entrainment achieved!
-                # Use the mean marker time on the first day of the streak
-                first_marker = np.mean(day_markers[d])
-                return first_marker - start_recovery_time
-    
+                # absolute re-entrainment time in hours (since t=0)
+                t_abs = d * 24.0 + h
+                # convert to hours since start of recovery
+                return t_abs - start_day * 24.0
+
     return None
 
-def amp_series(model, traj):
-    """
-    Extracts the amplitude series from the trajectory states.
-    Uses R (state[0]) for Hannay-like models or sqrt(x^2 + xc^2) for Forger-like models.
-    """
-    try:
-        states = np.asarray(traj.states)
-        if states.size == 0:
-            return np.array([])
-        
-        R = states[:, 0]
-        
-        # Heuristic check: if the max value seems too large for an 'R' state
-        if np.nanmax(np.abs(R)) > 5.0 or np.nanmin(R) < -2.0:
-            # Fallback to sqrt(x^2+xc^2) for Cartesian coordinates
-            if states.shape[1] >= 2:
-                R = np.sqrt(states[:, 0]**2 + states[:, 1]**2)
-            else:
-                # If only one state, use absolute value as amplitude proxy
-                R = np.abs(states[:, 0])
-        
-        # Ensure all values are positive (amplitude should be non-negative)
-        R = np.abs(R)
-        return R
-        
-    except Exception as e:
-        print(f"[WARNING] Error extracting amplitude: {e}")
-        return np.array([])
-
-def hours_to_90pct(R, t, baseline_days=30, start_day=31):
-    """
-    Return the time (in HOURS) from the start of recovery until the
-    amplitude first reaches 90% of its baseline mean.
-    """
-    if len(R) == 0 or len(t) == 0:
-        return None
-    
-    # baseline amplitude = mean over last few baseline days
-    base_mask = t < baseline_days * 24.0
-    if not np.any(base_mask):
-        return None
-    
-    R_base = np.mean(R[base_mask])
-    if R_base <= 0:
-        return None
-    
-    target = 0.9 * R_base
-    start_time = start_day * 24.0
-    
-    for i, ti in enumerate(t):
-        if ti < start_time:
-            continue
-        if R[i] >= target:
-            return ti - start_time  # hours since recovery start
-    
-    return None
-
-# --- Plotting Function ---
-
+'''
 def plot_phase_amp(t, model, traj_dark, traj_ld, title):
-    """Generates a two-panel plot showing phase error and daily mean amplitude."""
-    # Phase markers
-    cbt_dark = daily_marker_times(model, traj_dark)
-    cbt_ld = daily_marker_times(model, traj_ld)
+    # phase markers
+    marker_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)
+    marker_ld   = get_phase_markers(model, traj_ld, marker=PHASE_MARKER)
 
-    # Compute baseline for error calculation
-    baseline_h = compute_baseline_marker(cbt_ld, baseline_days=30) 
-    
-    if baseline_h is None:
-        print(f"[WARNING] Cannot plot {title}: no baseline marker")
-        return
-
-    def err_series(cbt_times, baseline_h):
-        """Calculates the daily phase error relative to the baseline marker."""
-        if len(cbt_times) == 0:
-            return np.array([]), np.array([])
-        
-        days = sorted(set([int(tt // 24.0) for tt in cbt_times]))
+    # phase error lines
+    # compute baseline
+    baseline_h = compute_baseline_marker(marker_ld)  # both had baseline; use ld to get a baseline
+    def err_series(cbt_times):
+        days = sorted(set([int(tt//24.00) for tt in cbt_times]))
         errs = []
         xs = []
         for d in days:
-            hs = [tt % 24.0 for tt in cbt_times if d * 24.0 <= tt < (d + 1) * 24.0]
-            if not hs:
-                continue
+            hs = [tt%24.00 for tt in cbt_times if d*24.00 <= tt < (d+1)*24.00]
+            if not hs: continue
             xs.append(d)
-            # Use circular distance
-            mean_h = circular_mean_hours(hs)
-            if mean_h is not None:
-                e = circular_distance(mean_h, baseline_h)
-                errs.append(e)
-            else:
-                errs.append(np.nan)
+            # circular wrap error
+            e = (((np.mean(hs) - baseline_h + 12) % 24.00) - 12)
+            errs.append(e)
         return np.array(xs), np.array(errs)
+    xd, ed = err_series(marker_dark)
+    xl, el = err_series(marker_ld)
 
-    xd, ed = err_series(cbt_dark, baseline_h)
-    xl, el = err_series(cbt_ld, baseline_h)
-
-    # Amplitude series
+    # amplitude
     Rd = amp_series(model, traj_dark)
     Rl = amp_series(model, traj_ld)
 
-    fig, axs = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
-    
-    # --- Phase Plot ---
-    if len(xd) > 0:
-        axs[0].plot(xd, ed, 'o-', label='Darkness Recovery', markersize=3)
-    if len(xl) > 0:
-        axs[0].plot(xl, el, 'x-', label='LD Recovery', markersize=3)
-    axs[0].axhline(0, color='gray', linestyle='--', lw=0.8, alpha=0.6)
-    axs[0].axhline(TOL_MIN/60.0, color='red', linestyle=':', lw=0.8, alpha=0.6)
-    axs[0].axhline(-TOL_MIN/60.0, color='red', linestyle=':', lw=0.8, alpha=0.6)
+    fig, axs = plt.subplots(2, 1, figsize=(8,6), sharex=True)
+    axs[0].plot(xd, ed, label='Darkness')
+    axs[0].plot(xl, el, label='LD')
+    axs[0].axhline(0, lw=0.8, alpha=0.6)
     axs[0].set_ylabel('Phase error (h)')
-    axs[0].set_title(f'Circadian Re-entrainment Simulation: {title}')
+    axs[0].set_title(title)
+    axs[0].legend()
+
+    # downsample amplitude daily mean
+    days = np.arange(0, int(t[-1]//24.00)+1)
+    def daily_mean(R):
+        out=[]
+        for d in days:
+            mask = (t>=d*24.00)&(t<(d+1)*24.00)
+            if np.any(mask): out.append(np.mean(R[mask]))
+            else: out.append(np.nan)
+        return np.array(out)
+    axs[1].plot(days, daily_mean(Rd), label='Darkness')
+    axs[1].plot(days, daily_mean(Rl), label='LD')
+    axs[1].set_xlabel('Day')
+    axs[1].set_ylabel('Daily mean amplitude')
+    axs[1].legend()
+    plt.tight_layout()
+    plt.show()
+'''
+def plot_phase_amp(
+    t,
+    model,
+    traj_dark,
+    traj_ld,
+    baseline_h,
+    recovery_start_day,
+    title,
+    phase_marker_name="CBTmin",
+):
+    """
+    Two-panel plot:
+      top: daily phase error vs baseline
+      bottom: daily mean amplitude vs day (dark vs LD), with 90% baseline line.
+    """
+
+    # --- Phase error series ---
+
+    markers_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)
+    markers_ld   = get_phase_markers(model, traj_ld,   marker=PHASE_MARKER)
+
+    days_d, mean_d = daily_mean_marker(markers_dark)
+    days_l, mean_l = daily_mean_marker(markers_ld)
+
+    err_d = np.array(
+        [circular_distance(h, baseline_h) if h is not None else np.nan for h in mean_d]
+    )
+    err_l = np.array(
+        [circular_distance(h, baseline_h) if h is not None else np.nan for h in mean_l]
+    )
+
+    # --- Amplitude series (daily means) ---
+
+    Rd = amp_series(model, traj_dark)
+    Rl = amp_series(model, traj_ld)
+
+    def daily_mean_amp(R, t):
+        if len(R) == 0:
+            return np.array([]), np.array([])
+        total_days = int(t[-1] // 24) + 1
+        days = np.arange(total_days)
+        out = []
+        for d in days:
+            mask = (t >= d * 24.0) & (t < (d + 1) * 24.0)
+            if np.any(mask):
+                out.append(np.mean(R[mask]))
+            else:
+                out.append(np.nan)
+        return days, np.array(out)
+
+    days_amp_d, daily_Rd = daily_mean_amp(Rd, t)
+    days_amp_l, daily_Rl = daily_mean_amp(Rl, t)
+
+    # Baseline amplitude (from LD branch only)
+    baseline_mask = days_amp_l < BASELINE_DAYS
+    if np.any(baseline_mask):
+        baseline_R = np.nanmean(daily_Rl[baseline_mask])
+    else:
+        baseline_R = np.nanmean(daily_Rl)
+    target_90 = 0.9 * baseline_R if not np.isnan(baseline_R) else None
+
+    ##plot
+    fig, axs = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+
+    # Top: phase error
+    if days_d.size > 0:
+        axs[0].plot(days_d, err_d, "o-", label="Darkness Recovery", markersize=3)
+    if days_l.size > 0:
+        axs[0].plot(days_l, err_l, "x-", label="LD Recovery", markersize=3)
+    axs[0].axhline(0.0, color="k", linestyle="--", linewidth=0.8)
+    axs[0].axvline(recovery_start_day, color="grey", linestyle=":", linewidth=0.8)
+    axs[0].set_ylabel(f"Phase error ({phase_marker_name}) [h]")
     axs[0].legend()
     axs[0].grid(True, alpha=0.3)
 
-    # --- Amplitude Plot ---
-    if len(t) > 0:
-        days = np.arange(0, int(t[-1] // 24.0) + 1)
-        
-        def daily_mean(R):
-            """Calculates the mean amplitude for each full day."""
-            if len(R) == 0:
-                return np.full(len(days), np.nan)
-            out = []
-            for d in days:
-                mask = (t >= d * 24.0) & (t < (d + 1) * 24.0)
-                if np.any(mask):
-                    out.append(np.mean(R[mask]))
-                else:
-                    out.append(np.nan)
-            return np.array(out)
-            
-        daily_Rd = daily_mean(Rd)
-        daily_Rl = daily_mean(Rl)
-        
-        # Baseline for 90% target line
-        baseline_R = np.nanmean(daily_Rl[:30]) if len(daily_Rl) >= 30 else np.nanmean(daily_Rl)
-        target_90 = 0.9 * baseline_R if not np.isnan(baseline_R) else None
+    # Bottom: amplitude
+    if days_amp_d.size > 0:
+        axs[1].plot(days_amp_d, daily_Rd, "o-", label="Darkness Recovery", markersize=3)
+    if days_amp_l.size > 0:
+        axs[1].plot(days_amp_l, daily_Rl, "x-", label="LD Recovery", markersize=3)
+    if target_90 is not None:
+        axs[1].axhline(
+            target_90,
+            color="green",
+            linestyle=":",
+            linewidth=0.8,
+            alpha=0.6,
+            label="90% baseline amplitude",
+        )
+    axs[1].axvline(recovery_start_day, color="grey", linestyle=":", linewidth=0.8)
+    axs[1].set_xlabel("Day")
+    axs[1].set_ylabel("Daily mean amplitude")
+    axs[1].legend()
+    axs[1].grid(True, alpha=0.3)
 
-        if len(daily_Rd) > 0:
-            axs[1].plot(days, daily_Rd, 'o-', label='Darkness Recovery', markersize=3)
-        if len(daily_Rl) > 0:
-            axs[1].plot(days, daily_Rl, 'x-', label='LD Recovery', markersize=3)
-        if target_90 is not None:
-            axs[1].axhline(target_90, color='green', linestyle=':', lw=0.8, alpha=0.6, label='90% Baseline Amp')
-        axs[1].set_xlabel('Day')
-        axs[1].set_ylabel('Daily Mean Amplitude')
-        axs[1].legend()
-        axs[1].grid(True, alpha=0.3)
-
+    fig.suptitle(f"{title} – {phase_marker_name}-based analysis")
     plt.tight_layout()
     plt.show()
-
-# --- Main Execution ---
-
+'''
 def main():
-    try:
-        import circadian.models as models  # your models.py
-    except ImportError:
-        print("[CRITICAL ERROR] Could not import 'circadian.models'. Ensure it is in the path.")
-        print("Trying alternative import...")
-        try:
-            import models
-        except ImportError:
-            print("[CRITICAL ERROR] Could not import 'models' either. Exiting.")
-            return
-
-    # 1. Build baseline schedule
+    models = importlib.import_module("models")  # your models.py
+    # Build baseline schedule
     t, lux = make_ld_schedule(HOURS, day_lux=DAY_LUX, night_lux=NIGHT_LUX)
-
-    # 2. Insert all-nighter on day 30 -> 22:00–06:00 bright
+    # Insert all-nighter on day 30 -> 22:00–06:00 bright
     lux_disrupted = insert_all_nighter(lux.copy(), t,
                                        start_hr=ALL_NIGHTER_START,
                                        end_hr=ALL_NIGHTER_END,
-                                       lux_level=ALL_NIGHTER_LUX,
+                                       lux_level=ALLNIGHTER_LUX,
                                        day_index=30)
-
-    # 3. Branches: darkness vs LD during recovery (starting day 31)
-    lux_dark = branch_darkness_after(t, lux_disrupted, start_day=31, night_lux=NIGHT_LUX)
-    lux_ld = lux_disrupted  # already back to normal LD after day 31
+    # Branches: darkness vs LD during recovery
+    lux_dark = branch_darkness_after(t, lux_disrupted, start_day=31, night_lux=0.0)
+    lux_ld   = lux_disrupted  # already back to normal LD after day 31
 
     for name in MODEL_NAMES:
         if not hasattr(models, name):
-            print(f"\n[!] Could not find model class '{name}' in models.py. Skipping.")
+            print(f"[!] Could not find model class '{name}' in models.py. Skipping.")
             continue
-        
         ModelClass = getattr(models, name)
-        model = ModelClass()
-        
+    
+
         print(f"\n=== Running {name} ===")
-        
-        # Integrate trajectories
+
         try:
+            model = ModelClass()
             traj_dark = model.integrate(t, input=lux_dark)
-            traj_ld = model.integrate(t, input=lux_ld)
+            traj_ld   = model.integrate(t, input=lux_ld)
+
+        # continue as normal...
         except Exception as e:
-            print(f"[ERROR] Integration failed for {name}: {e}. Skipping metrics.")
+            print(f"[ERROR running {name}]: {e}")
             continue
 
         # Phase markers & baseline
-        cbt_ld = daily_marker_times(model, traj_ld)
-        baseline_h = compute_baseline_marker(cbt_ld, baseline_days=30)
-        
-        if baseline_h is None:
-            print(f"[ERROR] Could not establish a reliable baseline marker for {name}. Skipping metrics.")
-            continue
-
-        print(f"Baseline CBTmin: {baseline_h:.2f} h")
-
+        marker_ld   = get_phase_markers(model, traj_ld, marker=PHASE_MARKER)
+        baseline_h = compute_baseline_marker(marker_ld, baseline_days=30)
         # Metrics
         rdark = reentrainment_hours(daily_marker_times(model, traj_dark), baseline_h,
                                     start_day=31, tol_min=TOL_MIN, streak=STREAK)
-        rld = reentrainment_hours(cbt_ld, baseline_h,
-                                  start_day=31, tol_min=TOL_MIN, streak=STREAK)
+        rld   = reentrainment_hours(marker_ld, baseline_h,
+                                    start_day=31, tol_min=TOL_MIN, streak=STREAK)
 
         Rd = amp_series(model, traj_dark)
         Rl = amp_series(model, traj_ld)
-
         dA_d = hours_to_90pct(Rd, t, baseline_days=30, start_day=31)
         dA_l = hours_to_90pct(Rl, t, baseline_days=30, start_day=31)
-        
+
+        recovery_ratio = None
+        if dA_d and dA_l:
+            recovery_ratio = dA_d / dA_l if dA_l != 0 else None
+
+        print(f"Re-entrainment (Dark): {rdark:.2f} h" if rdark is not None else "Re-entrainment (Dark): not reached")
+        print(f"Re-entrainment (LD):   {rld:.2f} h"   if rld   is not None else "Re-entrainment (LD):   not reached")
+        print(f"90% amplitude (Dark):  {dA_d:.2f} h" if dA_d is not None else "90% amplitude (Dark):  not reached")
+        print(f"90% amplitude (LD):    {dA_l:.2f} h" if dA_l is not None else "90% amplitude (LD):    not reached")
+        print(f"Recovery Ratio (Dark/LD): {recovery_ratio}")
+
+
+        plot_phase_amp(t, model, traj_dark, traj_ld, title=name)
+'''
+def main():
+    # Build common protocol (baseline + all-nighter + recovery)
+    t, lux_all, baseline_days, recovery_start_day = allnighter_protocol(
+        baseline_days=BASELINE_DAYS,
+        recovery_days=RECOVERY_DAYS,
+        dt=DT,
+        day_start=DAY_START,
+        day_end=DAY_END,
+        day_lux=DAY_LUX,
+        night_lux=NIGHT_LUX,
+        allnighter_lux=ALLNIGHTER_LUX,
+        allnighter_start=ALL_NIGHTER_START,
+        allnighter_end=ALL_NIGHTER_END,
+    )
+
+    lux_ld   = branch_ld_after(t, lux_all, recovery_start_day)
+    lux_dark = branch_dark_after(t, lux_all, recovery_start_day, dark_lux=DARK_LUX)
+
+    print(f"Using phase marker: {PHASE_MARKER.upper()}")
+    print(f"Baseline days: {BASELINE_DAYS}, recovery days: {RECOVERY_DAYS}")
+    print(f"Recovery starts on day {recovery_start_day}")
+
+    for name, cls in MODEL_CLASSES:
+        print("\n==============================")
+        print(f"Model: {name}")
+
+        try:
+            model = cls()
+        except Exception as e:
+            print(f"[ERROR] Could not construct model {name}: {e}")
+            continue
+
+        # Integrate under dark and LD recovery branches
+        try:
+            traj_dark = model.integrate(t, input=lux_dark)
+            traj_ld   = model.integrate(t, input=lux_ld)
+        except Exception as e:
+            print(f"[ERROR] Integration failed for {name}: {e}")
+            continue
+
+        # Phase markers and baseline
+        markers_ld = get_phase_markers(model, traj_ld, marker=PHASE_MARKER)
+        baseline_h = compute_baseline_marker(markers_ld, baseline_days=BASELINE_DAYS)
+
+        if baseline_h is None:
+            print(f"[ERROR] No reliable baseline {PHASE_MARKER.upper()} for {name}, skipping metrics.")
+            continue
+
+        print(f"Baseline {PHASE_MARKER.upper()}: {baseline_h:.2f} h")
+
+        # Re-entrainment times (hours from start of recovery)
+        markers_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)
+
+        rdark = reentrainment_hours(
+            markers_dark,
+            baseline_h,
+            start_day=recovery_start_day,
+            tol_min=TOL_MIN,
+            streak=STREAK,
+        )
+        rld = reentrainment_hours(
+            markers_ld,
+            baseline_h,
+            start_day=recovery_start_day,
+            tol_min=TOL_MIN,
+            streak=STREAK,
+        )
+
+        # Amplitude recovery (hours from start of recovery)
+        Rd = amp_series(model, traj_dark)
+        Rl = amp_series(model, traj_ld)
+
+        dA_d = hours_to_90pct(
+            Rd,
+            t,
+            baseline_days=BASELINE_DAYS,
+            start_day=recovery_start_day,
+        )
+        dA_l = hours_to_90pct(
+            Rl,
+            t,
+            baseline_days=BASELINE_DAYS,
+            start_day=recovery_start_day,
+        )
+
+        # Recovery ratio (dark/LD)
         recovery_ratio = None
         if dA_d is not None and dA_l is not None and dA_l != 0:
             recovery_ratio = dA_d / dA_l
-        
-        print(f"Re-entrainment (Dark): {rdark:.2f} h ({rdark/24:.1f} days)" if rdark is not None else "Re-entrainment (Dark): not reached")
-        print(f"Re-entrainment (LD):   {rld:.2f} h ({rld/24:.1f} days)"    if rld is not None else "Re-entrainment (LD):   not reached")
-        print(f"90% amplitude (Dark):  {dA_d:.2f} h ({dA_d/24:.1f} days)" if dA_d is not None else "90% amplitude (Dark):  not reached")
-        print(f"90% amplitude (LD):    {dA_l:.2f} h ({dA_l/24:.1f} days)" if dA_l is not None else "90% amplitude (LD):    not reached")
-        print(f"Recovery Ratio (Dark/LD): {recovery_ratio:.2f}" if recovery_ratio is not None else "Recovery Ratio (Dark/LD): N/A")
 
-        plot_phase_amp(t, model, traj_dark, traj_ld, title=name)
+        # Print metrics in a consistent format
+        if rdark is not None:
+            print(f"Re-entrainment (Dark): {rdark:.2f} h ({rdark/24.0:.2f} days)")
+        else:
+            print("Re-entrainment (Dark): not reached")
+
+        if rld is not None:
+            print(f"Re-entrainment (LD):   {rld:.2f} h ({rld/24.0:.2f} days)")
+        else:
+            print("Re-entrainment (LD):   not reached")
+
+        if dA_d is not None:
+            print(f"90% amplitude (Dark):  {dA_d:.2f} h ({dA_d/24.0:.2f} days)")
+        else:
+            print("90% amplitude (Dark):  not reached")
+
+        if dA_l is not None:
+            print(f"90% amplitude (LD):    {dA_l:.2f} h ({dA_l/24.0:.2f} days)")
+        else:
+            print("90% amplitude (LD):    not reached")
+
+        if recovery_ratio is not None:
+            print(f"Recovery ratio (Dark/LD): {recovery_ratio:.2f}")
+        else:
+            print("Recovery ratio (Dark/LD): N/A")
+
+        # Plot for this model
+        phase_label = "CBTmin" if PHASE_MARKER.lower() == "cbt" else "DLMO"
+        plot_phase_amp(
+            t,
+            model,
+            traj_dark,
+            traj_ld,
+            baseline_h,
+            recovery_start_day,
+            title=name,
+            phase_marker_name=phase_label,
+        )
+
 
 if __name__ == "__main__":
     main()
+

@@ -1,8 +1,8 @@
 import numpy as np
-
+'''
 __all__ = ["recovery_time"]
 
-def recovery_time(dlmo, baseline, start_day=25, threshold=0.30):
+def recovery_time(dlmo, baseline, start_day=25, threshold=0.10):
     """
     Compute the first day where the DLMO returns within a threshold of the baseline.
 
@@ -32,3 +32,12 @@ def recovery_time(dlmo, baseline, start_day=25, threshold=0.30):
         return None
 
     return start_day + recovery_days[0]
+
+'''
+from metrics import reentrainment_hours
+
+def recovery_time(marker_times, baseline_marker, start_day=25, tol_min=15, streak=3):
+    hours = reentrainment_hours(marker_times, baseline_marker, start_day, tol_min, streak)
+    if hours is None:
+        return None
+    return start_day + hours / 24.0
