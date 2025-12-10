@@ -4,14 +4,14 @@ import numpy as np
 
 
 def allnighter_protocol(
-    baseline_days: int = 30,
-    recovery_days: int = 14,
+    baseline_days: int = 20,
+    recovery_days: int = 25,
     dt: float = 0.1,
     day_start: float = 7.0,
     day_end: float = 23.0,
-    day_lux: float = 250.0,
-    night_lux: float = 1.0,
-    allnighter_lux: float = 1000.0,
+    day_lux: float = 500.0,
+    night_lux: float = 0.0,
+    allnighter_lux: float = 300.0,
     allnighter_start: float = 22.0,
     allnighter_end: float = 6.0,
 ):
@@ -85,11 +85,12 @@ def branch_ld_after(t, lux_all, recovery_start_day: int):
     LD-recovery branch: just use the original schedule (baseline + all-nighter + LD recovery).
     Provided for symmetry & future flexibility.
     """
+    
     # For now this is a no-op; we return a copy to avoid accidental in-place edits.
     return lux_all.copy()
 
 
-def branch_dark_after(t, lux_all, recovery_start_day: int, dark_lux: float = 0.0):
+def branch_dark_after(t, lux_all, recovery_start_day, dark_lux):
     """
     Dark-recovery branch: from recovery_start_day onward, hold light at dark_lux
     for all hours (constant darkness or very dim light).
@@ -115,3 +116,65 @@ def branch_dark_after(t, lux_all, recovery_start_day: int, dark_lux: float = 0.0
     mask = t >= start_t
     lux_dark[mask] = dark_lux
     return lux_dark
+
+def branch_shortnight_after(
+    t,
+    lux_all,
+    recovery_start_day,
+    day_start,
+    day_lux,
+    night_lux,
+    allnighter_lux,
+    past_bedtime,
+):
+    """
+    Apply a short-night schedule ONLY on the first recovery day
+    (the 24 h starting at recovery_start_day * 24), then resume
+    the original LD schedule contained in lux_all.
+
+    Short-night pattern on that day:
+        day_start → day_start+16   : day_lux
+        then      → +past_bedtime  : allnighter_lux (late study)
+        remaining hours            : night_lux (sleep)
+    """
+    lux_sn = lux_all.copy()
+
+    # 24 h window for the special short-night day
+    sn_start = recovery_start_day * 24.0        # first hour after all-nighter
+    sn_end   = sn_start + 24.0                  # end of that recovery day
+
+    # Day and late-study geometry in *circadian* time-of-day
+    day_end = (day_start + 16.0) % 24.0
+
+    bright_start = day_end
+    bright_end   = (day_end + past_bedtime) % 24.0
+
+    for i, ti in enumerate(t):
+        # Only modify the one recovery day
+        if ti < sn_start or ti >= sn_end:
+            continue
+
+        hour = ti % 24.0
+
+        # Day interval
+        if day_start <= day_end:
+            is_day = day_start <= hour < day_end
+        else:
+            # (general wrap-safe form)
+            is_day = (hour >= day_start) or (hour < day_end)
+
+        # Late bright interval (may wrap, e.g. 22→01)
+        if bright_start <= bright_end:
+            is_bright = bright_start <= hour < bright_end
+        else:
+            is_bright = (hour >= bright_start) or (hour < bright_end)
+
+        # Priority: bright > day > night, *only on this one day*
+        if is_bright:
+            lux_sn[i] = allnighter_lux
+        elif is_day:
+            lux_sn[i] = day_lux
+        else:
+            lux_sn[i] = night_lux
+
+    return lux_sn

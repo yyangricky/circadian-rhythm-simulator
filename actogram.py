@@ -7,7 +7,6 @@ from circadian.lights import LightSchedule
 from circadian.models import Forger99, Jewett99, Hannay19, Hannay19TP
 '''
 from recovery_time import recovery_time
-
 from models import Forger99, Jewett99, Hannay19, Hannay19TP
 
 from circadian.plots import Actogram

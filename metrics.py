@@ -1,10 +1,7 @@
-
-
 import math
 import numpy as np
 
-
-# -------- Phase-marker helpers --------
+# Phase-marker helpers 
 
 def get_phase_markers(model, trajectory, marker="cbt"):
     """
@@ -68,7 +65,7 @@ def circular_mean_hours(hours):
 
 def compute_baseline_marker(marker_times, baseline_days=25):
     """
-    Baseline phase marker (CBTmin, DLMO, etc.) from last baseline_days.
+    Baseline phase marker (CBTmin or DLMO) from last baseline_days.
 
     Parameters
     ----------
@@ -116,8 +113,7 @@ def circular_distance(h1, h2):
     return diff
 
 
-def reentrainment_hours(marker_times, baseline_marker_h,
-                        start_day=31, tol_min=15, streak=3):
+def reentrainment_hours(marker_times, baseline_marker_h, start_day=31, tol_min=15, streak=3):
     """
     Time to re-entrainment, measured from the start of the recovery phase.
 
@@ -202,8 +198,7 @@ def reentrainment_hours(marker_times, baseline_marker_h,
 
     return None
 
-
-# -------- Amplitude helpers --------
+# mplitude helpers 
 
 def amp_series(model, trajectory):
     """
@@ -243,10 +238,88 @@ def amp_series(model, trajectory):
         print(f"[WARNING] Error extracting amplitude: {e}")
         return np.array([])
 
-
-def hours_to_90pct(R, t, baseline_days=30, start_day=31):
+def hours_to_90pct(R, t,pct, start_day, sustain_days,baseline_R=None):
     """
-    Time from start of recovery until amplitude first reaches 90% baseline.
+    Time from start of recovery until amplitude first reaches a chosen
+    fraction of the baseline amplitude (here: 90%), provided the *daily
+    mean* amplitude stays above that threshold for `sustain_days`
+    consecutive days.
+
+    """
+    R = np.asarray(R)
+    t = np.asarray(t)
+    if R.size == 0 or t.size == 0:
+        return None
+
+    # 1) Baseline amplitude
+    if baseline_R is None:
+        start_baseline = (start_day - baseline_window_days) * 24.0
+        end_baseline = start_day * 24.0
+        mask = (t >= start_baseline) & (t < end_baseline)
+        if not np.any(mask):
+            return None
+        baseline_R = np.nanmean(R[mask])
+    if baseline_R <= 0 or np.isnan(baseline_R):
+        return None
+    target = pct * baseline_R
+
+    # 3) Restrict to recovery phase
+    start_time = start_day * 24.0
+    recovery_mask = t >= start_time
+    if not np.any(recovery_mask):
+        return None
+
+    R_rec = R[recovery_mask]
+    t_rec = t[recovery_mask]
+
+    # Day index for each recovery sample: 0,1,2,... after start_time
+    day_indices = np.floor((t_rec - start_time) / 24.0).astype(int)
+    unique_days = np.unique(day_indices)
+
+    # 3) Daily mean amplitudes during recovery
+    daily_means = []
+    for d in unique_days:
+        mask = day_indices == d
+        if np.any(mask):
+            daily_means.append(np.mean(R_rec[mask]))
+        else:
+            daily_means.append(np.nan)
+    daily_means = np.array(daily_means)
+
+    # 4) Find first day that starts a sustain_days streak of daily means >= target
+    first_day = None
+    for i in range(len(unique_days)):
+        streak_days = unique_days[i : i + sustain_days]
+        if len(streak_days) < sustain_days:
+            break
+        # ensure they are consecutive calendar days
+        if not np.all(np.diff(streak_days) == 1):
+            continue
+        means_slice = daily_means[i : i + sustain_days]
+        if np.all(means_slice >= target):
+            first_day = unique_days[i]
+            break
+
+    if first_day is None:
+        return None
+
+    # 5) Within that first successful day, find earliest time the series crosses threshold
+    mask_first_day = (day_indices == first_day)
+    crossings = np.where(R_rec[mask_first_day] >= target)[0]
+    if crossings.size == 0:
+        return None
+
+    # index in R_rec / t_rec
+    first_idx_global = np.where(mask_first_day)[0][crossings[0]]
+    return float(t_rec[first_idx_global] - start_time)
+
+'''
+def hours_to_90pct(R, t,PCT, baseline_days, start_day, sustain_days):
+    
+    Time from start of recovery until amplitude first reaches a chosen
+    fraction of the baseline amplitude (here: 100%), provided it stays
+    above that threshold for `sustain_days` consecutive days, evaluated
+    on a sliding time window.
 
     Parameters
     ----------
@@ -258,18 +331,22 @@ def hours_to_90pct(R, t, baseline_days=30, start_day=31):
         Days used to compute baseline amplitude (t < baseline_days*24).
     start_day : int
         First day of recovery.
+    sustain_days : int
+        Required consecutive days above the threshold.
 
     Returns
     -------
     float or None
-        Hours after start_day*24 until R(t) >= 0.9 * baseline_mean,
+        Hours after start_day*24 until the earliest time t0 such that
+        R(t) >= target for all t in [t0, t0 + 24*sustain_days),
         or None if not reached.
-    """
+    
     R = np.asarray(R)
     t = np.asarray(t)
     if R.size == 0 or t.size == 0:
         return None
 
+    # ----- baseline amplitude -----
     base_mask = t < baseline_days * 24.0
     if not np.any(base_mask):
         return None
@@ -278,13 +355,41 @@ def hours_to_90pct(R, t, baseline_days=30, start_day=31):
     if R_base <= 0:
         return None
 
-    target = 0.9 * R_base
+    
+    target = PCT * R_base
+
+    # ----- restrict to recovery phase -----
     start_time = start_day * 24.0
+    recovery_mask = t >= start_time
+    if not np.any(recovery_mask):
+        return None
 
-    for Ri, ti in zip(R, t):
-        if ti < start_time:
+    R_rec = R[recovery_mask]
+    t_rec = t[recovery_mask]
+
+    window_len = sustain_days * 24.0  # hours of required sustain
+
+    n = len(t_rec)
+    last_t = t_rec[-1]
+
+    # ----- sliding-window search -----
+    for j in range(n):
+        t0 = t_rec[j]
+        t_end = t0 + window_len
+
+        # Not enough data to cover full sustain window
+        if last_t < t_end:
+            break
+
+        # All points in [t0, t_end)
+        in_window = (t_rec >= t0) & (t_rec < t_end)
+        if not np.any(in_window):
             continue
-        if Ri >= target:
-            return ti - start_time
 
+        # Check that amplitude is above target for the whole window
+        if np.all(R_rec[in_window] >= target):
+            return float(t0 - start_time)
+
+    # Never found a sustained-above-threshold interval
     return None
+'''
