@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1765468377.22463 "/Users/rickyyang/Desktop/ODE Project/final_report.tex" "final_report.pdf" "final_report" 1765468377.47598 0
-  "/Users/rickyyang/Desktop/ODE Project/final_report.tex" 1765468343.38663 173 0e0f95b3a359f158004c65f5f72ff9eb ""
+["pdflatex"] 1765474928.1917 "/Users/rickyyang/Desktop/ODE Project/final_report/final_report.tex" "final_report.pdf" "final_report" 1765474928.55463 0
+  "/Users/rickyyang/Desktop/ODE Project/final_report/final_report.tex" 1765474927.98244 1808 e2ce9d04ddd9bef41d52a44227a7e594 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -24,8 +24,8 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1765468304 5467155 19efa205003f9ecad95fbbaa6ff24da1 ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741450574 3345740 46b66fdb0378f7bf5921b5eabf1762b8 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "final_report.aux" 1765468377.4576 132 becad25d16353fbd81e5644d2e8bca32 "pdflatex"
-  "final_report.tex" 1765468343.38663 173 0e0f95b3a359f158004c65f5f72ff9eb ""
+  "final_report.aux" 1765474928.53428 944 83a4d720e81b7fef796d1b49a81d1107 "pdflatex"
+  "final_report.tex" 1765474927.98244 1808 e2ce9d04ddd9bef41d52a44227a7e594 ""
   (generated)
   "final_report.aux"
   "final_report.log"
