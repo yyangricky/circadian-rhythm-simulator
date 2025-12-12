@@ -5,33 +5,36 @@ import math
 import matplotlib.pyplot as plt
 from metrics import get_phase_markers, compute_baseline_marker, reentrainment_hours, amp_series, hours_to_90pct, circular_mean_hours, circular_distance 
 from protocols import allnighter_protocol, branch_ld_after, branch_dark_after, branch_shortnight_after
-from models import Jewett99, Forger99, Hannay19, Hannay19TP
+from models import Jewett99, Forger99, Hannay19, Hannay19TP, Breslow13,Skeldon23
 '''
 ld, LD -> a regular 'light-dark' cycle (16 hour day, 8 hour nights)
 sn, SN-> a 'short night' cycle that implements a poor sleep schedule (5 hour nights, 19 hour days)  
 d, dark -> simulates a constant darkness condition (reflects how the a external zeitgebers, re-entrainment is impossible)
 '''
 # Which phase marker to use for the analysis ("cbt" or "dlmo")
-PHASE_MARKER = "cbt" #"cbt"    "dlmo"
+PHASE_MARKER = "dlmo" #"cbt"    "dlmo"
 MODEL_CLASSES = [
     ("Jewett99",   Jewett99),
     ("Forger99",   Forger99),
     ("Hannay19",   Hannay19),
-    ("Hannay19TP", Hannay19TP),]
+    ("Hannay19TP", Hannay19TP),
+    ("Breslow13", Breslow13),
+    ('Skeldon23', Skeldon23)
+]
 
 # ==== protocol and light schedule ====
-DT = 0.05
+DT = 0.1
 BASELINE_DAYS = 25
-RECOVERY_DAYS = 25
+RECOVERY_DAYS = 15
 HOURS = 24* (BASELINE_DAYS + 1 + RECOVERY_DAYS) 
 # Re-entrainment definition
 TOL_MIN = 15     # tolerance in minutes = 0.25 hours
 STREAK = 3       # consecutive days within tolerance
 DAY_START = 6.0
 DAY_END = 22.0
-PCT = 0.999 
+PCT = 0.9999 
 # Baseline light levels (lux)
-DAY_LUX = 300.0
+DAY_LUX = 3000.0
 NIGHT_LUX = 0.0
 DARK_LUX = 1.0
 # All-nighter 
@@ -44,8 +47,8 @@ t, lux_all, baseline_days, recovery_start_day = allnighter_protocol(
     baseline_days=BASELINE_DAYS,
     recovery_days=RECOVERY_DAYS,
     dt=DT,
-    day_start=7.0,
-    day_end=23.0,
+    day_start=DAY_START,
+    day_end=DAY_END,
     day_lux=DAY_LUX,
     night_lux=NIGHT_LUX,
     allnighter_lux=ALLNIGHTER_LUX,
@@ -341,24 +344,27 @@ def main():
         markers_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)
         markers_sn   = get_phase_markers(model, traj_sn,   marker=PHASE_MARKER)
 
+        # For DLMO we anchor re-entrainment to the last full baseline day
+        reentrain_start_day = baseline_days if PHASE_MARKER.lower() == "dlmo" else recovery_start_day
+
         rdark = reentrainment_hours(
             markers_dark,
             baseline_h,
-            start_day=recovery_start_day,
+            start_day=reentrain_start_day,
             tol_min=TOL_MIN,
             streak=STREAK,
         )
         rld = reentrainment_hours(
             markers_ld,
             baseline_h,
-            start_day=recovery_start_day,
+            start_day=reentrain_start_day,
             tol_min=TOL_MIN,
             streak=STREAK,
         )
         rsn = reentrainment_hours(
             markers_sn,
             baseline_h,
-            start_day=recovery_start_day,
+            start_day=reentrain_start_day,
             tol_min=TOL_MIN,
             streak=STREAK,
         )
@@ -392,8 +398,8 @@ def main():
         # Print metrics 
         if rdark is not None:
             print(f"Re-entrainment (Dark): {rdark:.2f} h ({rdark/24.0:.2f} days)")
-        else:
-            print("Re-entrainment (Dark): N/A (In constant darkness, re-entrainment to an external cycle is impossible as the clock is free-running!")
+       # else:
+     #       print("Re-entrainment (Dark): N/A (In constant darkness, re-entrainment to an external cycle is impossible as the clock is free-running!")
 
         if rld is not None:
             print(f"Re-entrainment (LD): {rld:.2f} h ({rld/24.0:.2f} days)")
@@ -445,4 +451,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
