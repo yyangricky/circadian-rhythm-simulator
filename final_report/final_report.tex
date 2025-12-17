@@ -13,17 +13,7 @@ A brief summary of the objectives, methods, and key findings
 \section{Introduction}
 Modelling human circadian rhythm is a topic of great interest in biology as it is the biological mechanism that governs the periodical processes of the body, such as sleep-wake cycles. Circadian rhythm is almost exclusively modelled by ODEs, making this topic highly suitable for this course. The topic of circadian rhythms is of personal relevance to the authors, as we all share the universal university experience of sleep loss before a midterm, which leads us to wonder if we can mathematically model what happens to our circadian rhythm after we pull an all-nighter. This leads to the research question: how long does it take for the circadian rhythm to recover after being disrupted by an all-nighter? Due to the existence of multiple established models of circadian rhythm, we will be comparing the models in the papers of Forger, Jewett, and Hannay and evaluating their accuracy using the Recovery Ratio.
 \section{Mathmatical Model and Theoretical Background}
-overview of (4) different models:
-- Forger99 and Jewett99 =  adaptations of kronauer, two state variables (x and xc) function like the cosine and sine components of an oscillation. The instantaneous amplitude of the oscillation is derived from these variables by calculating the magnitude of the 2D state
-    - *Jewett99*: a model based on the work of Jewett and Kronauer (1999), essentially representing Kronauer’s classic model of the circadian oscillator (a two-variable Van der Pol oscillator entrained by light). Kronauer’s model uses an equation for the pacemaker that includes an explicit amplitude component and light-driven forcing.
-    - *Forger99*: simplified model by Forger, Jewett, and Kronauer - aimed to be more accurate. It still has two state variables - is self-sustained (limit cycle) rather than heavily damped, meaning it can oscillate on its own in constant conditions. It captures human circadian phase and light responses in a simpler form than Kronauer’s original.
-    - Hannay19 = a single population model , extended to a two population model (hannay19TP)
-    
-    • *Hannay19* : a more recent model (2019) that introduces a macroscopic approach derived from SCN neuron network models. Hannay’s “single-population” model uses an explicit amplitude state *R* (radius of oscillation) as one of the state variables and a phase angle (or an equivalent two-state formulation where state[0] behaves like an amplitude variable. It is a self-sustained oscillator with parameters tuned to human data, and it can exhibit more realistic behavior under strong perturbations (e.g., slower amplitude recovery).
-    
-    • *Hannay19TP*: two populations (often representing two subdivisions of the SCN) This model allows for internal desynchrony between two coupled oscillators, which can capture complex dynamics like transients in amplitude and phase that single-oscillator models might miss. It’s an advanced model expected to handle large perturbations (like all-nighters) more realistically by, for example, showing significant amplitude suppression and slow recovery when cues are removed.
-    
-    The code calculates three primary outcomes for each model: **re-entrainment time**, **amplitude recovery (90%) time**, and **the recovery ratio** derived from those
+
 \section{Methodology}
 Detail any computational/numerical methods or experimental setup.
 \section{Results}
