@@ -1,122 +1,266 @@
+"""
+Clean Actogram Visualization - Similar to Example
+Shows phase markers with light/dark schedule bars on the right
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.lines as lines
-'''
-from circadian.plots import Actogram
-from circadian.lights import LightSchedule
-from circadian.models import Forger99, Jewett99, Hannay19, Hannay19TP
-'''
-from recovery_time import recovery_time
 from models import Forger99, Jewett99, Hannay19, Hannay19TP
+from metrics import get_phase_markers
 
-from circadian.plots import Actogram
-from metrics import get_phase_markers, compute_baseline_marker, reentrainment_hours
-from protocols import allnighter_protocol
+# Settings
+plt.rcParams['font.size'] = 11
+plt.rcParams['savefig.dpi'] = 300
 
+# Parameters
 DT = 0.10
-BASELINE_DAYS = 30
-RECOVERY_DAYS = 14
+BASELINE_WEEKS = 4
+DISRUPTION_WEEKENDS = 3
+RECOVERY_WEEKS = 3
+PHASE_MARKER = "dlmo"  # Change to "cbt" if needed
 
-time, lux_all, baseline_days, recovery_start_day = allnighter_protocol(
-    baseline_days=BASELINE_DAYS,
-    recovery_days=RECOVERY_DAYS,
-    dt=DT,
-    day_start=7.0,
-    day_end=23.0,
-    day_lux=250.0,
-    night_lux=1.0,
-    allnighter_lux=1000.0,
-)
-light_values = lux_all  # actogram sees the same schedule as amplitude_plot
-'''
-days_night = 3
-days_day = 2
-#slam_shift = LightSchedule.ShiftWork(lux=300.0, days_on=days_night, days_off=days_day)
-
-total_days = 45
-time = np.arange(0, 24*total_days, 0.10)
-#light_values = slam_shift(time)
-
-jet_lag_shift = LightSchedule.SocialJetlag(lux=1000.0, num_regular_days=20, num_jetlag_days=5, hours_delayed=6)
-light_values = jet_lag_shift(time)
-'''
-
-f_model = Forger99()
-kj_model = Jewett99()
-spm_model = Hannay19()
-tpm_model = Hannay19TP()
-
-equilibration_reps = 2
-initial_conditions_forger = f_model.equilibrate(time, light_values, equilibration_reps)
-initial_conditions_kj = kj_model.equilibrate(time, light_values, equilibration_reps)
-initial_conditions_spm = spm_model.equilibrate(time, light_values, equilibration_reps)
-initial_conditions_tpm = tpm_model.equilibrate(time, light_values, equilibration_reps)
-
-# from f_model(time, initial_conditions_forger, light_values) to  f_model.integrate(time, initial_condition=initial_conditions_forger, input=light_values)
-# consistant 
-trajectory_f = f_model.integrate(time, initial_condition=initial_conditions_forger, input = light_values)
-trajectory_kj = kj_model.integrate(time, initial_condition=initial_conditions_kj, input = light_values)
-trajectory_spm = spm_model.integrate(time, initial_condition=initial_conditions_spm, input = light_values)
-trajectory_tpm = tpm_model.integrate(time, initial_condition=initial_conditions_tpm, input = light_values)
-'''
-dlmo_f = f_model.dlmos()
-dlmo_kj = kj_model.dlmos()
-dlmo_spm = spm_model.dlmos()
-dlmo_tpm = tpm_model.dlmos()
-'''
-
-dlmo_f  = get_phase_markers(f_model, trajectory_f,  marker="dlmo")
-cbt_f   = get_phase_markers(f_model, trajectory_f,  marker="cbt")
-
-dlmo_kj  = get_phase_markers(kj_model, trajectory_kj,  marker="dlmo")
-cbt_kj   = get_phase_markers(kj_model, trajectory_kj,  marker="cbt")
-dlmo_spm  = get_phase_markers(spm_model, trajectory_spm,  marker="dlmo")
-cbt_spm  = get_phase_markers(spm_model, trajectory_spm,  marker="cbt")
-dlmo_tpm  = get_phase_markers(tpm_model, trajectory_tpm,  marker="dlmo")
-cbt_tpm   = get_phase_markers(tpm_model, trajectory_tpm,  marker="cbt")
+MODELS = [
+    ("Forger99", Forger99, "#4472C4"),      # Blue
+    ("Jewett99", Jewett99, "#A23B72"),      # Purple  
+    ("Hannay19", Hannay19, "#70AD47"),      # Green
+    ("Hannay19TP", Hannay19TP, "#C00000"),  # Red
+]
 
 
-acto = Actogram(time, light_vals=light_values, opacity=1.0, smooth=False)
-acto.plot_phasemarker(dlmo_f, color='blue')
-acto.plot_phasemarker(dlmo_spm, color='darkgreen')
-acto.plot_phasemarker(dlmo_tpm, color='red')
-acto.plot_phasemarker(dlmo_kj, color='purple')
-# legend
-blue_line = lines.Line2D([], [], color='blue', label='Forger99')
-green_line = lines.Line2D([], [], color='darkgreen', label='Hannay19')
-red_line = lines.Line2D([], [], color='red', label='Hannay19TP')
-purple_line = lines.Line2D([], [], color='purple', label='Jewett99')
-
-#this is testing
-baseline_day = 20
-baseline_dlmo_f = compute_baseline_marker(dlmo_f, baseline_days=20) #dlmo_f[baseline_day]      # Forger99
-baseline_dlmo_kj = compute_baseline_marker(dlmo_kj, baseline_days=20) #dlmo_kj[baseline_day]    # Jewett99
-baseline_dlmo_spm = compute_baseline_marker(dlmo_spm, baseline_days=20) #dlmo_spm[baseline_day]  # Hannay19
-baseline_dlmo_tpm = compute_baseline_marker(dlmo_tpm, baseline_days=20) #dlmo_tpm[baseline_day]  # Hannay19TP
-
-# added the % 24, changed from axhline to axvline so the baselines are on the right axis (vertical lines)
-acto.ax.axvline(baseline_dlmo_f % 24, color='blue', linestyle='--', alpha=0.6)
-acto.ax.axvline(baseline_dlmo_spm% 24, color='darkgreen', linestyle='--', alpha=0.6)
-acto.ax.axvline(baseline_dlmo_tpm% 24, color='red', linestyle='--', alpha=0.6)
-acto.ax.axvline(baseline_dlmo_kj% 24, color='purple', linestyle='--', alpha=0.6)
-
-# Compute recovery days for each model
-rec_f  = recovery_time(dlmo_f, baseline_dlmo_f)
-rec_kj = recovery_time(dlmo_kj, baseline_dlmo_kj)
-rec_spm = recovery_time(dlmo_spm, baseline_dlmo_spm)
-rec_tpm = recovery_time(dlmo_tpm, baseline_dlmo_tpm)
-
-# Print results
-print("Days until DLMO returns to within 10% of baseline:")
-print(f"Forger99:   Day {rec_f}")
-print(f"Jewett99:   Day {rec_kj}")
-print(f"Hannay19:   Day {rec_spm}")
-print(f"Hannay19TP: Day {rec_tpm}")
+def social_jetlag_protocol(baseline_weeks, disruption_weekends, recovery_weeks, dt):
+    """Create social jet lag protocol"""
+    baseline_days = baseline_weeks * 7
+    disruption_days = disruption_weekends * 7
+    recovery_days = recovery_weeks * 7
+    total_days = baseline_days + disruption_days + recovery_days
+    
+    t = np.arange(0.0, 24.0 * total_days, dt)
+    lux = np.zeros_like(t)
+    
+    disruption_start = baseline_days
+    disruption_end = baseline_days + disruption_days
+    
+    for i, ti in enumerate(t):
+        day = int(ti // 24.0)
+        hour = ti % 24.0
+        day_of_week = day % 7
+        is_weekend = (day_of_week == 5 or day_of_week == 6)
+        
+        if day < disruption_start:
+            lux[i] = 1000.0 if (7.0 <= hour < 23.0) else 1.0
+        elif day < disruption_end:
+            if is_weekend:
+                lux[i] = 1000.0 if (10.0 <= hour < 24.0) or (0.0 <= hour < 2.0) else 1.0
+            else:
+                lux[i] = 1000.0 if (7.0 <= hour < 23.0) else 1.0
+        else:
+            lux[i] = 1000.0 if (7.0 <= hour < 23.0) else 1.0
+    
+    return t, lux, baseline_days, disruption_end
 
 
-plt.legend(handles=[blue_line, purple_line, green_line, red_line], 
-           loc='upper center', bbox_to_anchor=(0.5, 1.12), ncol=4)
-plt.title("Actogram for DLMO recovery", pad=35)
-plt.tight_layout()
-plt.show()
+def allnighter_protocol(baseline_days, recovery_days, dt):
+    """Create one all-nighter protocol"""
+    allnighter_day = baseline_days
+    total_days = baseline_days + 1 + recovery_days  # baseline + 1 all-nighter + recovery
+    
+    t = np.arange(0.0, 24.0 * total_days, dt)
+    lux = np.zeros_like(t)
+    
+    for i, ti in enumerate(t):
+        day = int(ti // 24.0)
+        hour = ti % 24.0
+        
+        if day < allnighter_day:
+            # Baseline: normal schedule
+            lux[i] = 1000.0 if (7.0 <= hour < 23.0) else 1.0
+        elif day == allnighter_day:
+            # All-nighter: light all night
+            lux[i] = 1000.0
+        else:
+            # Recovery: back to normal
+            lux[i] = 1000.0 if (7.0 <= hour < 23.0) else 1.0
+    
+    return t, lux, baseline_days, allnighter_day + 1
 
+
+def create_actogram(protocol_type="social_jetlag"):
+    """Create clean actogram similar to example
+    
+    Args:
+        protocol_type: Either "social_jetlag" or "allnighter"
+    """
+    
+    print("\n" + "="*70)
+    print(f"GENERATING ACTOGRAM - {protocol_type.upper()}")
+    print("="*70)
+    
+    # Create protocol based on type
+    if protocol_type == "social_jetlag":
+        t, lux, baseline_days, recovery_start = social_jetlag_protocol(
+            BASELINE_WEEKS, DISRUPTION_WEEKENDS, RECOVERY_WEEKS, DT
+        )
+        title = 'Actogram for Social Jet Lag Protocol'
+        filename = 'actogram_social_jetlag.png'
+    else:  # allnighter
+        t, lux, baseline_days, recovery_start = allnighter_protocol(
+            baseline_days=30, recovery_days=14, dt=DT
+        )
+        title = 'Actogram for One All-Nighter Protocol'
+        filename = 'actogram_allnighter.png'
+    
+    total_days = int(t[-1] / 24.0)
+    
+    # Create figure with layout similar to example
+    fig = plt.figure(figsize=(10, 12))
+    
+    # Main plot for phase markers (left side)
+    ax_main = plt.subplot2grid((1, 20), (0, 0), colspan=14)
+    
+    # Light schedule plot (right side)
+    ax_light = plt.subplot2grid((1, 20), (0, 15), colspan=5, sharey=ax_main)
+    
+    # Analyze each model
+    print("\nAnalyzing models...")
+    all_markers = {}
+    for model_name, model_class, color in MODELS:
+        print(f"  - {model_name}")
+        
+        model = model_class()
+        traj = model.integrate(t, input=lux)
+        markers = get_phase_markers(model, traj, marker=PHASE_MARKER)
+        
+        all_markers[model_name] = (markers, color)
+    
+    # Plot phase markers on main axis
+    for model_name, (markers, color) in all_markers.items():
+        marker_days = [int(m // 24) for m in markers]
+        marker_times = [m % 24 for m in markers]
+        
+        ax_main.plot(marker_times, marker_days, '-', color=color,
+                    label=model_name, linewidth=2.0, alpha=0.85)
+    
+    # Add phase boundary lines
+    ax_main.axhline(baseline_days, color='red', linestyle='--', 
+                   linewidth=1.5, alpha=0.4)
+    ax_main.axhline(recovery_start, color='green', linestyle='--',
+                   linewidth=1.5, alpha=0.4)
+    
+    # Format main plot
+    ax_main.set_xlim([18, 6])  # Show from 18:00 to 06:00 (wrapping around midnight)
+    ax_main.set_ylim([total_days, 0])  # Inverted so day 0 at top
+    ax_main.set_xlabel('ZT', fontsize=13, fontweight='bold')
+    ax_main.set_ylabel('Days', fontsize=13, fontweight='bold')
+    
+    # Set x-axis ticks to show time wrapping
+    ax_main.set_xticks([18, 21, 24, 3, 6])
+    ax_main.set_xticklabels(['18', '21', '24', '3', '6'])
+    
+    # Legend at top
+    ax_main.legend(loc='upper center', bbox_to_anchor=(0.5, 1.08), 
+                  ncol=4, fontsize=11, frameon=True)
+    
+    ax_main.grid(True, alpha=0.2, axis='y')
+    ax_main.set_axisbelow(True)
+    
+    # Plot light/dark schedule on right axis
+    for day in range(total_days):
+        # Determine light schedule for this day
+        if protocol_type == "social_jetlag":
+            day_of_week = day % 7
+            is_weekend = (day_of_week == 5 or day_of_week == 6)
+            
+            if day < baseline_days:
+                # Normal: 7am-11pm light
+                light_periods = [(7, 23)]
+            elif day < recovery_start:
+                # Disruption phase
+                if is_weekend:
+                    # Late weekend: 10am-2am
+                    light_periods = [(10, 24), (0, 2)]
+                else:
+                    # Normal weekday
+                    light_periods = [(7, 23)]
+            else:
+                # Recovery: back to normal
+                light_periods = [(7, 23)]
+        else:  # allnighter
+            if day < baseline_days:
+                light_periods = [(7, 23)]
+            elif day == baseline_days:
+                # All-nighter: 24h light
+                light_periods = [(0, 24)]
+            else:
+                # Recovery
+                light_periods = [(7, 23)]
+        
+        # Draw black background (full 24h darkness)
+        ax_light.barh(day, 24, left=0, height=1.0, 
+                     color='black', edgecolor='black', linewidth=0.3)
+        
+        # Draw white bars for light periods
+        for start, end in light_periods:
+            ax_light.barh(day, end - start, left=start, height=1.0,
+                        color='white', edgecolor='black', linewidth=0.3)
+    
+    # Format light schedule plot
+    ax_light.set_xlim([0, 24])
+    ax_light.set_ylim([total_days, 0])
+    ax_light.set_xticks([0, 6, 12, 18, 24])
+    ax_light.set_xticklabels(['0', '6', '12', '18', '24'], fontsize=9)
+    ax_light.yaxis.set_visible(False)
+    ax_light.spines['left'].set_visible(False)
+    ax_light.spines['top'].set_visible(False)
+    ax_light.spines['right'].set_visible(False)
+    ax_light.set_xlabel('Light\nSchedule', fontsize=10, fontweight='bold')
+    
+    # Title
+    fig.suptitle(title, fontsize=14, fontweight='bold', y=0.99)
+    
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    plt.savefig(filename, bbox_inches='tight', dpi=300)
+    print(f"\n✓ Saved: {filename}")
+    
+    # Print baseline statistics
+    print("\n" + "="*70)
+    print(f"BASELINE {PHASE_MARKER.upper()} TIMES (average)")
+    print("="*70)
+    
+    for model_name, (markers, _) in all_markers.items():
+        baseline_markers = [m % 24 for m in markers if m < baseline_days * 24]
+        if baseline_markers:
+            avg_time = np.mean(baseline_markers)
+            hours = int(avg_time)
+            minutes = int((avg_time - hours) * 60)
+            print(f"{model_name:12} - {hours:02d}:{minutes:02d}")
+    
+    print("="*70)
+    print()
+    
+    plt.close()
+
+
+if __name__ == "__main__":
+    print("\n" + "="*70)
+    print("ACTOGRAM GENERATION - CIRCADIAN RHYTHM PROJECT")
+    print("="*70)
+    print(f"\nPhase Marker: {PHASE_MARKER.upper()}")
+    print("="*70)
+    
+    # Generate social jet lag actogram
+    print("\n[1/2] Social Jet Lag Protocol")
+    print(f"Protocol: {BASELINE_WEEKS}w baseline → {DISRUPTION_WEEKENDS}w disruption → {RECOVERY_WEEKS}w recovery")
+    create_actogram(protocol_type="social_jetlag")
+    
+    # Generate all-nighter actogram
+    print("\n[2/2] One All-Nighter Protocol")
+    print("Protocol: 30d baseline → 1 all-nighter → 14d recovery")
+    create_actogram(protocol_type="allnighter")
+    
+    print("\n" + "="*70)
+    print("ALL ACTOGRAMS COMPLETE!")
+    print("="*70)
+    print("\nOutputs:")
+    print("  1. actogram_social_jetlag.png - Social jet lag (late weekends)")
+    print("  2. actogram_allnighter.png - One all-nighter")
+    print("="*70)
