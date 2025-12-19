@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  19 DEC 2025 16:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  19 DEC 2025 18:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -87,13 +87,17 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \mathdisplay@stack=\toks21
 LaTeX Info: Redefining \[ on input line 2953.
 LaTeX Info: Redefining \] on input line 2954.
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2024/02/08 v1.3d Input encoding file
+\inpenc@prehook=\toks22
+\inpenc@posthook=\toks23
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/parskip/parskip.sty
 Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
  (/usr/local/texlive/2025/texmf-dist/tex/latex/kvoptions/kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
  (/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks22
+\KV@toks@=\toks24
 ) (/usr/local/texlive/2025/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
 Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
@@ -119,35 +123,31 @@ File: pdftex.def 2024/04/13 v1.2c Graphics/color driver for pdftex
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count283
-\float@exts=\toks23
+\float@exts=\toks25
 \float@box=\box54
-\@float@everytoks=\toks24
+\@float@everytoks=\toks26
 \@floatcapt=\box55
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count284
 \l__pdf_internal_box=\box56
-) (./final_report.aux
-
-LaTeX Warning: Label `fig:example_image' multiply defined.
-
-)
+) (./final_report.aux)
 \openout1 = `final_report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
  (/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count285
@@ -155,12 +155,12 @@ LaTeX Font Info:    ... okay on input line 10.
 \scratchbox=\box57
 \nofMPsegments=\count286
 \nofMParguments=\count287
-\everyMPshowfont=\toks25
+\everyMPshowfont=\toks27
 \MPscratchCnt=\count288
 \MPscratchDim=\dimen154
 \MPnumerator=\count289
 \makeMPintoPDFobject=\count290
-\everyMPtoPDFconversion=\toks26
+\everyMPtoPDFconversion=\toks28
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -175,7 +175,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 [2]
 
 [3]
-Overfull \hbox (9.32657pt too wide) detected at line 88
+Overfull \hbox (9.32657pt too wide) detected at line 89
 []\OML/cmm/m/it/10 L[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 R;  \OT1/cmr/m/n/10 ) = \OML/cmm/m/it/10 ^^[B\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 ^^@ []\OML/cmm/m/it/10 B\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 ) [] [](\OML/cmm/m/it/10   \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 ^^L[]\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 ^^@ []\OML/cmm/m/it/10 B\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 t\OT1/cmr/m/n/10 )(1 + \OML/cmm/m/it/10 R[]\OT1/cmr/m/n/10 ) [](2\OML/cmm/m/it/10   \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 ^^L[]\OT1/cmr/m/n/10 )
  []
 
@@ -185,7 +185,7 @@ Overfull \hbox (9.32657pt too wide) detected at line 88
 <actogram_clean.png, id=25, 712.8231pt x 860.2539pt>
 File: actogram_clean.png Graphic file (type png)
 <use actogram_clean.png>
-Package pdftex.def Info: actogram_clean.png  used on input line 126.
+Package pdftex.def Info: actogram_clean.png  used on input line 127.
 (pdftex.def)             Requested size: 241.49895pt x 291.44547pt.
 
 
@@ -193,49 +193,600 @@ Package pdftex.def Info: actogram_clean.png  used on input line 126.
 <figure_4_social_jetlag.png, id=30, 1147.1658pt x 497.9403pt>
 File: figure_4_social_jetlag.png Graphic file (type png)
 <use figure_4_social_jetlag.png>
-Package pdftex.def Info: figure_4_social_jetlag.png  used on input line 134.
+Package pdftex.def Info: figure_4_social_jetlag.png  used on input line 135.
 (pdftex.def)             Requested size: 379.5021pt x 164.7235pt.
 
-Overfull \hbox (34.5021pt too wide) in paragraph at lines 134--135
+Overfull \hbox (34.5021pt too wide) in paragraph at lines 135--136
  [][] 
  []
 
 
 
 [6 <./actogram_clean.png>]
-Overfull \hbox (2.68819pt too wide) in paragraph at lines 144--157
+Overfull \hbox (2.68819pt too wide) in paragraph at lines 145--158
  [][] 
  []
 
 
 
-[7{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc} <./figure_4_social_jetlag.png>]
+[7 <./figure_4_social_jetlag.png>]
 
 [8]
+Overfull \hbox (116.99597pt too wide) in paragraph at lines 445--445
+[]    \OT1/cmtt/m/n/10 def social_jetlag_protocol(baseline_weeks, disruption_weekends, recovery_weeks, dt):[] 
+ []
 
-[9] (./final_report.aux)
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 total_days = baseline_days + disruption_days + recovery_days[] 
+ []
+
+
+
+[9]
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 445--445
+[]            \OT1/cmtt/m/n/10 is_weekend = (day_of_week == 5 or day_of_week == 6)  # sat/sun[] 
+ []
+
+
+Overfull \hbox (137.99579pt too wide) in paragraph at lines 445--445
+[]                    \OT1/cmtt/m/n/10 lux[i] = 1000.0 if (10.0 <= hour < 24.0) or (0.0 <= hour < 2.0) else 1.0[] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 445--445
+[]                    \OT1/cmtt/m/n/10 lux[i] = 1000.0 if (7.0 <= hour < 23.0) else 1.0[] 
+ []
+
+
+
+[10]
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 445--445
+[]            \OT1/cmtt/m/n/10 t, lux, baseline_days, recovery_start = social_jetlag_protocol([] 
+ []
+
+
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 445--445
+[]                \OT1/cmtt/m/n/10 BASELINE_WEEKS, DISRUPTION_WEEKENDS, RECOVERY_WEEKS, DT[] 
+ []
+
+
+Overfull \hbox (32.9967pt too wide) in paragraph at lines 445--445
+[]            \OT1/cmtt/m/n/10 t, lux, baseline_days, recovery_start = allnighter_protocol([] 
+ []
+
+
+Overfull \hbox (74.99634pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_light = plt.subplot2grid((1, 20), (0, 15), colspan=5, sharey=ax_main)[] 
+ []
+
+
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 445--445
+[]            \OT1/cmtt/m/n/10 markers = get_phase_markers(model, traj, marker=PHASE_MARKER)[] 
+ []
+
+
+
+[11]
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 445--445
+[]            \OT1/cmtt/m/n/10 ax_main.plot(marker_times, marker_days, '-', color=color,[] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 445--445
+[]                        \OT1/cmtt/m/n/10 label=model_name, linewidth=2.0, alpha=0.85)[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_main.axhline(baseline_days, color='red', linestyle='--',[] 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_main.axhline(recovery_start, color='green', linestyle='--',[] 
+ []
+
+
+Overfull \hbox (90.7462pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_main.set_xlim([18, 6])  # show 18:00 to 06:00 (wrapping around midnight)[] 
+ []
+
+
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_main.set_ylabel('Days', fontsize=13, fontweight='bold')[] 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_main.legend(loc='upper center', bbox_to_anchor=(0.5, 1.08),[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 445--445
+[]                \OT1/cmtt/m/n/10 is_weekend = (day_of_week == 5 or day_of_week == 6)[] 
+ []
+
+
+
+[12]
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 445--445
+[]                         \OT1/cmtt/m/n/10 color='black', edgecolor='black', linewidth=0.3)[] 
+ []
+
+
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 445--445
+[]                \OT1/cmtt/m/n/10 ax_light.barh(day, end - start, left=start, height=1.0,[] 
+ []
+
+
+Overfull \hbox (53.99652pt too wide) in paragraph at lines 445--445
+[]                            \OT1/cmtt/m/n/10 color='white', edgecolor='black', linewidth=0.3)[] 
+ []
+
+
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_light.set_xticklabels(['0', '6', '12', '18', '24'], fontsize=9)[] 
+ []
+
+
+Overfull \hbox (64.49643pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 ax_light.set_xlabel('Light\nSchedule', fontsize=10, fontweight='bold')[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 fig.suptitle(title, fontsize=14, fontweight='bold', y=0.99)[] 
+ []
+
+
+
+[13]
+Overfull \hbox (85.49625pt too wide) in paragraph at lines 445--445
+[]            \OT1/cmtt/m/n/10 baseline_markers = [m % 24 for m in markers if m < baseline_days * 24][] 
+ []
+
+
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 445--445
+[]                \OT1/cmtt/m/n/10 print(f"{model_name:12} - {hours:02d}:{minutes:02d}")[] 
+ []
+
+
+Overfull \hbox (279.74208pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 print(f"Protocol: {BASELINE_WEEKS}w baseline \TS1/cmtt/m/n/10 ^^Y \OT1/cmtt/m/n/10 {DISRUPTION_WEEKENDS}w disruption \TS1/cmtt/m/n/10 ^^Y \OT1/cmtt/m/n/10 {RECOVERY_WEEKS}w recovery")[] 
+ []
+
+
+Overfull \hbox (64.49643pt too wide) in paragraph at lines 445--445
+[]        \OT1/cmtt/m/n/10 print("  actogram_social_jetlag.png - Social jet lag (late weekends)")[] 
+ []
+
+
+Overfull \hbox (468.7429pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 from metrics import get_phase_markers, compute_baseline_marker, reentrainment_hours, amp_series, hours_to_90pct, circular_mean_hours, circular_distance[] 
+ []
+
+
+Overfull \hbox (211.49515pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 from protocols import allnighter_protocol, branch_ld_after, branch_dark_after, branch_shortnight_after[] 
+ []
+
+
+Overfull \hbox (95.99615pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 from models import Jewett99, Forger99, Hannay19, Hannay19TP, Breslow13,Skeldon23[] 
+ []
+
+
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 ld, LD -> a regular 'light-dark' cycle (16 hour day, 8 hour nights)[] 
+ []
+
+
+Overfull \hbox (190.49533pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 sn, SN-> a 'short night' cycle that implements a poor sleep schedule (5 hour nights, 19 hour days)[] 
+ []
+
+
+Overfull \hbox (311.24428pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 d, dark -> simulates a constant darkness condition (reflects how the a external zeitgebers, re-entrainment is impossible)[] 
+ []
+
+
+
+[14{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 # Which phase marker to use for the analysis ("cbt" or "dlmo")[] 
+ []
+
+
+Overfull \hbox (169.49551pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 # short-night light delay (in hours) - we are assuming a lux level equal to the allnighter_lux[] 
+ []
+
+
+Overfull \hbox (32.9967pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 t, lux_all, baseline_days, recovery_start_day = allnighter_protocol([] 
+ []
+
+
+Overfull \hbox (85.49625pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 Given absolute marker times (hours), return (days, daily_mean_clock_hour).[] 
+ []
+
+
+
+[15]
+Overfull \hbox (148.4957pt too wide) in paragraph at lines 901--901
+[]    \OT1/cmtt/m/n/10 def reentrainment_hours(cbt_times, baseline_marker_h, start_day=31, tol_min=15, streak=3):[] 
+ []
+
+
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 Return the time to re-entrainment in HOURS (float), measured from[] 
+ []
+
+
+Overfull \hbox (85.49625pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 days = sorted(set(int(t // 24) for t in cbt_times if t >= start_day * 24))[] 
+ []
+
+
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 todays = [t for t in cbt_times if d * 24 <= t < (d + 1) * 24][] 
+ []
+
+
+Overfull \hbox (111.74602pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 err = (((h - baseline_marker_h + 12) % 24) - 12)   # wrapped error in hours[] 
+ []
+
+
+Overfull \hbox (80.24629pt too wide) in paragraph at lines 901--901
+[]                    \OT1/cmtt/m/n/10 toms = [t for t in cbt_times if d2 * 24 <= t < (d2 + 1) * 24][] 
+ []
+
+
+
+[16]
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 901--901
+[]                    \OT1/cmtt/m/n/10 err2 = (((h2 - baseline_marker_h + 12) % 24) - 12)[] 
+ []
+
+
+Overfull \hbox (64.49643pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 marker_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (53.99652pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 marker_ld   = get_phase_markers(model, traj_ld, marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (190.49533pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 baseline_h = compute_baseline_marker(marker_ld)  # both had baseline; use ld to get a baseline[] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 days = sorted(set([int(tt//24.00) for tt in cbt_times]))[] 
+ []
+
+
+Overfull \hbox (85.49625pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 hs = [tt%24.00 for tt in cbt_times if d*24.00 <= tt < (d+1)*24.00][] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 e = (((np.mean(hs) - baseline_h + 12) % 24.00) - 12)[] 
+ []
+
+
+
+[17]
+Overfull \hbox (90.7462pt too wide) in paragraph at lines 901--901
+[]          \OT1/cmtt/m/n/10 bottom: daily mean amplitude vs day (dark vs LD), with 90% baseline line.[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 markers_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 markers_ld   = get_phase_markers(model, traj_ld,   marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 markers_sn   = get_phase_markers(model, traj_sn,   marker=PHASE_MARKER)[] 
+ []
+
+
+
+[18]
+Overfull \hbox (132.74583pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 [circular_distance(h, baseline_h) if h is not None else np.nan for h in mean_d][] 
+ []
+
+
+Overfull \hbox (132.74583pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 [circular_distance(h, baseline_h) if h is not None else np.nan for h in mean_l][] 
+ []
+
+
+Overfull \hbox (137.99579pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 [circular_distance(h, baseline_h) if h is not None else np.nan for h in mean_s])[] 
+ []
+
+
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 target_90 = PCT * baseline_R if not np.isnan(baseline_R) else None[] 
+ []
+
+
+
+[19]
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 fig, axs = plt.subplots(2, 1, figsize=(8, 6), sharex=True)[] 
+ []
+
+
+Overfull \hbox (53.99652pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 axs[0].plot(days_d, err_d, "o-", label="Darkness", markersize=3)[] 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 axs[0].plot(days_l, err_l, "x-", label="LD", markersize=3)[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 axs[0].plot(days_s, err_s, "s-", label="Short-night", markersize=3)[] 
+ []
+
+
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 axs[0].axhline(0.0, color="k", linestyle="--", linewidth=0.8)[] 
+ []
+
+
+Overfull \hbox (106.49606pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 axs[0].axvline(recovery_start_day, color="grey", linestyle=":", linewidth=0.8)[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 axs[0].set_ylabel(f"Phase error ({phase_marker_name}) [h]")[] 
+ []
+
+
+Overfull \hbox (137.99579pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 axs[1].plot(days_amp_d, daily_Rd, "o-", label="Darkness Recovery", markersize=3)[] 
+ []
+
+
+Overfull \hbox (106.49606pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 axs[1].plot(days_amp_l, daily_Rl, "x-", label="LD Recovery", markersize=3)[] 
+ []
+
+
+Overfull \hbox (111.74602pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 axs[1].plot(days_amp_s, daily_Rsn, "s-", label="Short-night", markersize=3)[] 
+ []
+
+
+Overfull \hbox (106.49606pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 axs[1].axvline(recovery_start_day, color="grey", linestyle=":", linewidth=0.8)[] 
+ []
+
+
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 fig.suptitle(f"{title} { {phase_marker_name}-based analysis")[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 # Build common protocol (baseline + all-nighter + recovery)[] 
+ []
+
+
+Overfull \hbox (53.99652pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 t, lux_all, baseline_days, recovery_start_day = allnighter_protocol([] 
+ []
+
+
+
+[20]
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 lux_ld   = branch_ld_after(t, lux_all, recovery_start_day)[] 
+ []
+
+
+Overfull \hbox (111.74602pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 lux_dark = branch_dark_after(t, lux_all, recovery_start_day, dark_lux=DARK_LUX)[] 
+ []
+
+
+Overfull \hbox (32.9967pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 lux_sn   = branch_shortnight_after(t,lux_all,recovery_start_day,[] 
+ []
+
+
+Overfull \hbox (74.99634pt too wide) in paragraph at lines 901--901
+[]        \OT1/cmtt/m/n/10 print(f"Baseline days: {BASELINE_DAYS}, recovery days: {RECOVERY_DAYS}")[] 
+ []
+
+
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"[ERROR] Could not construct model {name}: {e}")[] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"[ERROR] Integration failed for {name}: {e}")[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 markers_ld = get_phase_markers(model, traj_ld, marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (122.24593pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 baseline_h = compute_baseline_marker(markers_ld, baseline_days=BASELINE_DAYS)[] 
+ []
+
+
+
+[21]
+Overfull \hbox (216.7451pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"[ERROR] No reliable baseline {PHASE_MARKER.upper()} for {name}, skipping metrics.")[] 
+ []
+
+
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 print(f"Baseline {PHASE_MARKER.upper()}: {baseline_h:.2f} h")[] 
+ []
+
+
+Overfull \hbox (90.7462pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 markers_dark = get_phase_markers(model, traj_dark, marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (90.7462pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 markers_sn   = get_phase_markers(model, traj_sn,   marker=PHASE_MARKER)[] 
+ []
+
+
+Overfull \hbox (59.24648pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 # For DLMO we anchor re-entrainment to the last full baseline day[] 
+ []
+
+
+Overfull \hbox (206.2452pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 reentrain_start_day = baseline_days if PHASE_MARKER.lower() == "dlmo" else recovery_start_day[] 
+ []
+
+
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 baseline_mask  = (t >= start_baseline) & (t < end_baseline)[] 
+ []
+
+
+Overfull \hbox (153.74565pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 baseline_R_ld  = np.nanmean(Rl[baseline_mask]) if np.any(baseline_mask) else np.nan[] 
+ []
+
+
+Overfull \hbox (326.99414pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 dA_d  = hours_to_90pct(Rd,  t, pct=PCT, start_day=recovery_start_day, sustain_days=STREAK, baseline_R=baseline_R_ld)[] 
+ []
+
+
+
+[22]
+Overfull \hbox (326.99414pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 dA_l  = hours_to_90pct(Rl,  t, pct=PCT, start_day=recovery_start_day, sustain_days=STREAK, baseline_R=baseline_R_ld)[] 
+ []
+
+
+Overfull \hbox (332.2441pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 dA_sn = hours_to_90pct(Rsn, t, pct=PCT, start_day=recovery_start_day, sustain_days=STREAK, baseline_R=baseline_R_ld,)[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 if dA_d is not None and dA_l is not None and dA_l != 0:[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 if dA_d is not None and dA_l is not None and dA_l != 0:[] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 if dA_sn is not None and dA_l is not None and dA_l != 0:[] 
+ []
+
+
+Overfull \hbox (106.49606pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"Re-entrainment (Dark): {rdark:.2f} h ({rdark/24.0:.2f} days)")[] 
+ []
+
+
+Overfull \hbox (468.7429pt too wide) in paragraph at lines 901--901
+[]         \OT1/cmtt/m/n/10 #       print("Re-entrainment (Dark): N/A (In constant darkness, re-entrainment to an external cycle is impossible as the clock is free-running!")[] 
+ []
+
+
+Overfull \hbox (74.99634pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"Re-entrainment (LD): {rld:.2f} h ({rld/24.0:.2f} days)")[] 
+ []
+
+
+Overfull \hbox (74.99634pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"Re-entrainment (SN): {rsn:.2f} h ({rsn/24.0:.2f} days)")[] 
+ []
+
+
+Overfull \hbox (90.7462pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"90% amplitude (Dark): {dA_d:.2f} h ({dA_d/24.0:.2f} days)")[] 
+ []
+
+
+Overfull \hbox (80.24629pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"90% amplitude (LD): {dA_l:.2f} h ({dA_l/24.0:.2f} days)")[] 
+ []
+
+
+Overfull \hbox (90.7462pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"90% amplitude (SN): {dA_sn:.2f} h ({dA_sn/24.0:.2f} days)")[] 
+ []
+
+
+
+[23]
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"Recovery ratio Dark/LD: {recovery_ratio_dark:.2f}")[] 
+ []
+
+
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 901--901
+[]                \OT1/cmtt/m/n/10 print(f"Recovery ratio SN/LD: {recovery_ratio_sn:.2f}")[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 901--901
+[]            \OT1/cmtt/m/n/10 phase_label = "CBTmin" if PHASE_MARKER.lower() == "cbt" else "DLMO"[] 
+ []
+
+
+
+[24] (./final_report.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
-
-
-LaTeX Warning: There were multiply-defined labels.
-
  ) 
 Here is how much of TeX's memory you used:
- 2825 strings out of 473190
- 43368 string characters out of 5715801
- 449101 words of memory out of 5000000
- 26071 multiletter control sequences out of 15000+600000
- 564248 words of font info for 55 fonts, out of 8000000 for 9000
+ 2861 strings out of 473190
+ 44184 string characters out of 5715801
+ 460370 words of memory out of 5000000
+ 26103 multiletter control sequences out of 15000+600000
+ 564378 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,9n,65p,1489b,237s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on final_report.pdf (9 pages, 800592 bytes).
+ 57i,9n,65p,1489b,271s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
+Output written on final_report.pdf (24 pages, 830367 bytes).
 PDF statistics:
- 95 PDF objects out of 1000 (max. 8388607)
- 57 compressed objects within 1 object stream
+ 147 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

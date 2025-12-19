@@ -1,8 +1,3 @@
-"""
-Clean Actogram Visualization - Similar to Example
-Shows phase markers with light/dark schedule bars on the right
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from models import Forger99, Jewett99, Hannay19, Hannay19TP
