@@ -1,8 +1,9 @@
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{parskip}
-
-\title{Modeling Recovery after Circadian Rhythm Disruption using Differential Equation Models}
+\usepackage{graphicx}
+\usepackage{float}
+\title{Modeling Recovery after Circadian Rhythm Disruption using Differential Equations}
 \author{Lara Simpson, Mark Saad, Ricky Yang, Chris Demian}
 \date{\today}
 
@@ -11,10 +12,10 @@
 \maketitle
 \newpage
 \section{Abstract}
-We investigated circadian rhythm recovery dynamics by creating sleep disruption and comparing four models, all consisting of differential equations: Forger [1], Jewett[2], and Hannay [3](both singe and two-population). We simulated disruption scenarios of three weeks of delayed weekend sleep schedules (social jet lag). Solutions were computed using 4th-order Runge-Kutta integration with CBTmin as the phase marker. All models achieved re-entrainment within 3 days under light-dark cycles for social jet lag. In contrast, when in darkness, models exhibited free-running behaviour with drift rates of 10.8-15.9 min/day, confirming that zeitgeber cues are necessary for entrainment. These findings confirm the robustness of circadian phase predictions across different models.
+We simulate the recovery time after three weeks of simulated circadian rhythm disruption. We compare four differential models presented in three papers: Forger’s model [1], Jewett’s model [2], and Hannay’s single-population and two-population models [3]. Solutions were computed using the fourth-order Runge-Kutta numerical integration method. CBTmin is used as the phase marker. We found that the models produced similar results after three weekends of delayed sleep schedules of 3 hours, the Forger, Jewett, Hannay Single-Population, and Hanny Two-Population producing re-entrainment times of 59.0, 52.1, 61.1, and 59.0 hours respectively, with the Jewett model disagreeing with the other models. 
 \section{Introduction}
-Modelling human circadian rhythm is a topic of great interest in biology as it is the biological mechanism that governs the periodical processes of the body, such as sleep-wake cycles. Circadian rhythm is almost exclusively modelled by ODEs, making this topic highly suitable for this course. The topic of circadian rhythms is of personal relevance to the authors, as we all share the universal university experience of sleep loss before a midterm, which leads us to wonder if we can mathematically model what happens to our circadian rhythm after repeated late nights and all-nighters. This leads to the research question: how long does it take for the circadian rhythm to recover after being disrupted? We will be comparing the models in the papers of Forger, Jewett, and Hannay.
-\section{Mathmatical Model and Theoretical Background}
+Modelling human circadian rhythm is a topic of great interest in biology as it is the biological mechanism that governs the periodical processes of the body, such as sleep-wake cycles. Circadian rhythm is almost exclusively modelled by ODEs, making this topic highly suitable for this course. The topic of circadian rhythms is of personal relevance to the authors, as we all share the universal university experience of sleep loss before a midterm, which leads us to wonder if we can mathematically model what happens to our circadian rhythm after repeated sleep loss. This leads to the research question: how long does it take for the circadian rhythm to recover after being disrupted? We will be comparing the models in the papers of Forger, Jewett, and Hannay.
+\section{Mathmatical Models}
 All models of circadian rhythms utilizes the Van der Pol’s oscillator. The basic model that the more recent models are based on was first proposed by Richard Kronauer in 1990 [4] and consists of the following pair of coupled ODES:
 \begin{equation}
     \frac{dx}{dt} = \left( \frac{\pi}{12} \right) \left[ x_c + \mu \left( x - \frac{4x^3}{3} \right) + B \right]
@@ -116,21 +117,61 @@ Note that $K_{from,to}$ represents coupling strength from one region to another.
 \section{Methodology}
 We set up a program modelling circadian rhythm, implementing the four models mentioned above. Solutions are computed using the 4th-order Runge-Kutta method. The input is the light level as a function of time, I(t). Core body temperature minimum (CBTmin), which occurs in early morning hours, is a standard physiological marker used as the state variable, x.  We set the light input to 0 when the person goes to bed, and 250 lux when the person is up.
 
-To simulate disruptions to a normal schedule, we assume a person who wakes up at 7:00 and goes to sleep at 23:00 under normal circumstances. We first run the program under a normal light schedule for the circadian rhythm to reach an equilibrium, then we simulate disruptions to their circadian rhythm: The light schedule is normal the first 30 days for x to equilibrate. Then, for the next 3 weeks, the person stays up until 2:00 and wakes up at 10:00 (3 hour delay) for Saturday and Sunday only. The light schedule returns to normal after day 49 and runs for another 3 weeks for the circadian rhythm to re-equilibrate. Then, the simulation is repeated, except we force complete darkness after the disruption to calculate darkness recovery.
+To simulate disruptions to a normal schedule, we assume a person who wakes up at 7:00 and goes to sleep at 23:00 under normal circumstances. We first run the program under a normal light schedule for the circadian rhythm to reach an equilibrium, then we simulate disruptions to their circadian rhythm: The light schedule is normal the first 30 days for x to equilibrate. Then, for the next 3 weeks, the person stays up until 2:00 and wakes up at 10:00 (3 hour delay) for Saturday and Sunday only. The light schedule returns to normal after day 49 and runs for another 3 weeks for the circadian rhythm to re-equilibrate. Then, the simulation is repeated, except we force complete darkness after the disruption to calculate darkness recovery. (This is done to test the reliability of the models, as in darkness, the models should not re-entrain but rather free-run.)
 
-The baseline CBTmin is computed by averaging the clock hour of CBTmin across (up to) the first 4 weeks. To compute re-entrainment time, the program checks when the model’s daily CBTmin is within 15 minutes of the baseline phase (relative phase error) for three consecutive days. The streak of 3 days corresponds to common practice in jet lag studies. If reached, the function returns the time (in hours) from the start of recovery to the first day of that streak. This is reported for both darkness and LD conditions. 90\% amplitude recovery time is also computed for both light and dark conditions.
+The baseline CBTmin is computed by averaging the clock hour of CBTmin across (up to) the first 4 weeks. To compute re-entrainment time, the program checks when the model’s daily CBTmin is within 15 minutes of the baseline phase (relative phase error) for three consecutive days. The streak of 3 days corresponds to common practice in jet lag studies. If reached, the function returns the time (in hours) from the start of recovery to the first day of that streak. This is reported for both darkness and LD conditions.
 \section{Results}
-The actogram (Figure 1) displays CBTmin timing across days on the y-axis and zeitgeber time on the x-axis, with light/dark schedule bars showing light exposure. During baseline, all four models maintained tight oscillating patterns. This shows that initially there was stable entrainment with CBTmin occurring consistently at 4:00-4:45 AM. The disruption phase produced progressive widening and drift of these oscillating patterns, showing accumulating phase delay from repeated weekend delays. Recovery shows the oscillations compressing and returning back to baseline as the models re-entrain to regular schedules.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{actogram_clean.png}
+    \caption{Actogram for Social Jet Lag Simulation across Four Models}
+    \label{fig:example_image}
+\end{figure}
 
+The actogram (Figure 1) displays CBTmin timing across days on the y-axis and zeitgeber time on the x-axis, with light/dark schedule bars showing light exposure. During baseline, all four models maintained tight oscillating patterns. This shows that initially there was stable entrainment with CBTmin occurring consistently at 4:00-4:45 AM. The disruption phase produced progressive widening and drift of these oscillating patterns, showing accumulating phase delay from repeated weekend delays. Recovery shows the oscillations compressing and returning back to baseline as the models re-entrain to regular schedules.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.1\textwidth]{figure_4_social_jetlag.png}
+    \caption{Circadian Phase Recovery for Social Jet Lag Across Four Models under Light-Dark (LD) and Constant Darkness (DD) Conditions}
+    \label{fig:example_image}
+\end{figure}
 Phase Deviation analysis (Figure 2) tracked deviations from baseline across the recovery period for LD cycles versus conditions of constant darkness. All four models accumulated peak deviations of 73-88 minutes by the end of the disruption period. Under LD recover, all models achieved re-entrainment which is defined as three consecutive days within ±20 minutes of baseline, at exactly 72 hours. In contrast, constant darkness conditions did not have zeitgeber input and displayed persistent free-running behaviour with linear drift rates of 10.8-15.9 min/day. These drift rates correspond to intrinsic circadian periods of approximately 24.2 hours. This is consistent with human isolation studies and confirms that light zeitgebers are necessary for stable entrainment. 
 
 Our quantitative results are summarized in the table below.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Re-entrainment Time under LD (hours)} \\
+\hline
+\text{Forger} & 59.0 \\
+\hline
+\text{Jewett} & 52.1 \\
+\hline
+\text{Hannay (Single Population)} & 61.1 \\
+\hline
+\text{Hannay (Two Population)} & 59.0 \\
+\hline
+\end{tabular}
+\end{table}
+
 \section{Discussion}
-Interpret your findings, identify limitations, and suggest further work.
+Overall, the models seem to be relatively consistent with each other, with similar graphs and a difference of less than 10 hours in re-entrainment time. However, a small outlier is Jewett’s model, which shows the fastest recovery by far, being ahead of the rest of the models by almost 10, suggesting limitations to Jewett’s model in predicting circaidan rhythm dynamics. (This model is the least credible of the three, as it was published the earliest, so the other two had time to build upon it. The other three models seem to agree despite being relatively different mathematically. Hence, we can predict that theoretically, a person can recover in less than 3 days following three consecutive weekends of sleeping late. Moreover, upon close examination of the graphs, one could see that the circadian rhythm returned to baseline three days after each weekend, and there is no evidence of cumulative circadian rhythm disruption as the circadian rhythm recovers completely before the next disruptive weekend. Hence, we can conclude that established theory suggests that a person can recover in less than 3 days after a weekend of sleeping late. An important limitation is that the circadian rhythm models we examined are purely based on theory rather than empirical evidence, so a feasible suggestion for future work would be to examine how the results of the model compare to clinical trials.
 \section{Conclusion}
-Summarize your contribution.
+The recovery time after three weeks of simulated circadian rhythm disruption is successfully simulated. We compared four differential models presented in three papers, with solutions were computed using the fourth-order Runge-Kutta numerical integration method. CBTmin is used as the phase marker. We found that the models produced similar results after three weekends of delayed sleep schedules of 3 hours, the Forger, Jewett, Hannay Single-Population, and Hanny Two-Population producing re-entrainment times of 59.0, 52.1, 61.1, and 59.0 hours respectively. The prediction of 52.1 hours from Jewett’s model can be taken as an outlier and is likely less accurate than the other results.
 \section{References}
-Include a properly formatted bibliography.
+[1] Forger, D. B., Jewett, M. E., \& Kronauer, R. E. (1999). A simpler model of the human circadian pacemaker. Journal of Biological Rhythms, 14(6), 533-539.
+
+[2] Jewett, M. E., Forger, D. B., \& Kronauer, R. E. (1999). Revised limit cycle oscillator model of human circadian pacemaker. Journal of Biological Rhythms, 14(6), 493-499.
+
+[3] Hannay, K. M., Booth, V., Forger, D. B., \& Booth, V. (2019). Macroscopic models for networks of coupled biological oscillators. Scientific Reports, 9(1), 1-12.
+
+[4] Kronauer RE (1990) A quantitative model for the effects of
+light on the amplitude and phase of the deep circadian
+pacemaker, based on human data. In Sleep ‘90, Proceedings
+of the Tenth European Congress on Sleep Research, J
+Horne, ed, pp 306-309, Pontenagel Press, Dusseldorf.
 \section{Appendix}
 For appendix, include rough code that did not make it into the report
 
